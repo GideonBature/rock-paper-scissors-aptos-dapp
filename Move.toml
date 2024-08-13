@@ -3,7 +3,7 @@ name = "RockPaperScissors_01"
 version = "1.0.0"
 authors = []
 [addresses]
-metaschool = "Replace_with_your_wallet_address_🔑"
+metaschool = "0x9e5cccd94f60191a189438d153c0dbf2386be5b45895183a27a2709e18343869"
 std = "0x1"
 [dev-addresses]
 [dependencies.AptosFramework]

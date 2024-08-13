@@ -7,6 +7,7 @@ import {
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 import styled from "styled-components";
+import { set } from "mongoose";
 
 const moduleName = process.env.REACT_APP_MODULE_NAME;
 const moduleAddress = process.env.REACT_APP_MODULE_ADDRESS;
@@ -183,6 +184,22 @@ const App: React.FC = () => {
 
   const toggleActiveState = async () => {
     // Implement the function here
+    setIsActive(!isActive);
+    if (!account) return;
+    if (!isActive) {
+      console.log("Toggling active state: " + isActive);
+      const payload: InputTransactionData = {
+        data: {
+          function: `${moduleAddress}::${moduleName}::createGame`,
+          functionArguments: [],
+        },
+    };
+    const response = await signAndSubmitTransaction(payload);
+    console.log(response);
+    }
+    setInput("");
+    setResult("");
+    setComputerSelection("");
   };
 
   const handleOperationClick = async (operation: string) => {};

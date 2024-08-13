@@ -15,7 +15,7 @@ module metaschool::RockPaperScissors_01 {
             result.duel_result = utf8(b"Game not yet played");
         }
         else {
-            let result = DuelResult { computer_selection: utf8(b"New Game Created") , duel_result:utf8(b"Game not yet played")};
+            let result = DuelResult { computer_selection: utf8(b"New Game Created") , duel_result: utf8(b"Game not yet played")};
             move_to(account, result);
         }
     }
