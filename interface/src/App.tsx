@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+import { AccountAddress, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import {
   InputTransactionData,
   useWallet,
@@ -7,6 +7,9 @@ import {
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 import styled from "styled-components";
+const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+
+const client = new Aptos(aptosConfig);
 
 const moduleName = process.env.REACT_APP_MODULE_NAME;
 const moduleAddress = process.env.REACT_APP_MODULE_ADDRESS;
@@ -180,6 +183,7 @@ const App: React.FC = () => {
   const [computerSelection, setComputerSelection] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
   const { account, connected, signAndSubmitTransaction } = useWallet();
+  const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
 
   const toggleActiveState = async () => {
     setIsActive(!isActive);
@@ -202,6 +206,39 @@ const App: React.FC = () => {
 
   const handleOperationClick = async (operation: string) => {
     // Implement the function here
+    setResult("");
+    setComputerSelection("");
+    if (
+      operation === "Rock" ||
+      operation === "Paper" ||
+      operation === "Scissors"
+    ) {
+      setInput(`${operation}`);
+      try {
+        if (!account) return;
+        setTransactionInProgress(true);
+        const payload: InputTransactionData = {
+          data: {
+            function: `${moduleAddress}::${moduleName}::duel`,
+            functionArguments: [operation],
+          },
+        };
+        const response = await signAndSubmitTransaction(payload);
+        const resultData = await client.getAccountResource({
+          accountAddress: account?.address,
+          resourceType: `${moduleAddress}::${moduleName}::DuelResult`,
+        });
+        console.log(resultData);
+        setResult(resultData.duel_result.toString());
+        setComputerSelection(resultData.computer_selection.toString());
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setTransactionInProgress(false);
+      }
+    } else {
+      setInput(`${operation}`);
+    }
   };
 
   const connectedView = () => {
